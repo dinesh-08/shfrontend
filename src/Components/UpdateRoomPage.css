@@ -1,0 +1,50 @@
+.add-room-container {
+  width: 400px;
+  margin: auto;
+  margin-top: 50px; /* Adjust as needed for vertical positioning */
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(220, 112, 112, 0.1);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  font-weight: bold;
+}
+
+input[type="text"],
+input[type="number"],
+textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.error {
+  color: #ff0000;
+  margin-top: 10px;
+}
+
+.success {
+  color: #008000;
+  margin-top: 10px;
+}
