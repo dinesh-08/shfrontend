@@ -3,23 +3,18 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 function Login() {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [userid, setUserId] = useState('');
   const [password, setPassword] = useState('');
-  const [id, setId] = useState(0); // default value set to 0
-  const [roleId, setRoleId] = useState(0); // default value set to 0
-  const [email, setEmail] = useState('');
-  const [mobileNo, setMobileNo] = useState('');
   const navigate = useNavigate();
 
       const handleSubmit = () => {
-        if (!firstName || !password) {
+        if (!userid || !password) {
           alert("Please fill out all fields");
           return;
         }
-        sessionStorage.setItem("firstName",firstName)
+        sessionStorage.setItem("userid",userid)
         axios.post('http://localhost:8181/api/hotel-staff/validate/login', {
-          firstName, lastName, password, id, role_id: roleId, email, mobileno: mobileNo
+          userid, password
         })
           .then(response => {
             console.log(response.data);
@@ -66,9 +61,9 @@ function Login() {
             border: '1px solid #ccc'
           }}
           type="text"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          placeholder="First Name"
+          value={userid}
+          onChange={(e) => setUserId(e.target.value)}
+          placeholder="User ID"
         />
         <input
           style={{

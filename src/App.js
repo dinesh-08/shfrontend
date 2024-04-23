@@ -15,6 +15,14 @@ import CreateAccount from './Components/CreateAccount';
 import GuestBooking from './Components/GuestBooking';
 import OnlineBooking from './Components/OnlineBooking';
 import AddStaff from './Components/AddStaff';
+import Viewmybookinghistory from './Components/Viewmybookinghistory';
+import Staffbooking from './Components/Staffbooking';
+import Viewbookinghistory from './Components/Viewbookinghistory';
+import Viewbookings from './Components/Viewbookings';
+import Feedback from 'react-bootstrap/esm/Feedback';
+import Feedbackform from './Components/Feedbackform';
+import Billsandinvoice from './Components/Billsandinvoice';
+import Report from './Components/Report';
 
 
 function App() {
@@ -37,6 +45,13 @@ function App() {
       <Route path='/GuestBooking' element={<GuestBooking/>}/>
       <Route path='/OnlineBooking' element={<OnlineBooking/>}/>
       <Route path='/addStaff' element={<AddStaff/>}/>
+      <Route path='/viewmybookinghistory' element={<Viewmybookinghistory/>}/>
+      <Route path='/Viewbookinghistory' element={<Viewbookinghistory/>}/>
+      <Route path='/staffbooking' element={<Staffbooking/>}/>
+      <Route path='/viewbookings' element={<Viewbookings/>}/>
+      <Route path='/feedbackform' element={<Feedbackform/>}/>
+      <Route path='/Billsandinvoice' element={<Billsandinvoice/>}/>
+      <Route path='/Report' element={<Report/>}/>
       
     </Routes>
   );

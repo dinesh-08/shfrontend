@@ -1,0 +1,27 @@
+table {
+    border-collapse: collapse;
+    width: 100%;
+    border: 1px solid #ddd; /* border around the table */
+  }
+  
+  th, td {
+    border: 1px solid #ddd; /* border around cells */
+    padding: 8px; /* padding inside cells */
+  }
+  
+  th {
+    background-color: #f2f2f2; /* background color for header cells */
+  }
+  
+  tr:nth-child(even) {
+    background-color: #f2f2f2; /* alternate row color */
+  }
+  
+  .update-btn {
+    margin-right: 200px; /* Adjust the margin as needed */
+  }
+  
+  .cancel-btn {
+    margin-left: 10px; /* Adjust the margin as needed */
+  }
+  

@@ -1,60 +1,76 @@
 import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
 import axios from 'axios';
-
+import { useLocation, useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 export const WalkInReservationPage = () => {
-  const [bookingDetails, setBookingDetails] = useState({
-    guestName: '',
-    room: { room_id: '' },
-    startDate: '',
-    endDate: ''
-  });
-  const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  const navigate = useNavigate();
+  const [guestName, setGuestName] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [members, setMembers] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+
   const location = useLocation();
+  const sdate=location.state.startDate;
+  const enDate=location.state.endDate;
+  const room_id = location.state.room.roomNo || '';
+  const room = location.state.room;
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [age, setAge] = useState('');
+  const [gender, setGender] = useState('');
+  const [mobileNo, setMobileNo] = useState('');
+  const [email, setEmail] = useState('');
+  const [securityNo, setSecurityNo] = useState('');
 
-  if (location && location.state && location.state.room) {
-    setBookingDetails(prev => ({
-      ...prev,
-      room: { ...prev.room, room_id: location.state.room.room_id }
-    }));
-  }
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    if (name.startsWith('room')) {
-      setBookingDetails(prev => ({
-        ...prev,
-        room: { ...prev.room, room_id: value }
-      }));
-    } else {
-      setBookingDetails(prev => ({
-        ...prev,
-        [name]: value,
-      }));
+  const handleBook = () => {
+    if ( !startDate || !endDate || members.length === 0) {
+      alert('Please fill out all fields before booking.');
+      return;
     }
-  };
+    axios.post('http://localhost:8181/api/hotel-staff/walk-in-reservation', {
+      room,
+      userid: sessionStorage.getItem("userid"),
+      startDate,
+      endDate,
+      members,
+      isdeleted: false,
+    })
+    .then(response => {
+      const bookingId = response.data;
+      alert('Booking successful!');
+      navigate('/viewbookinghistory', { state: { bookingId } });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post('http://localhost:8181/api/hotel-staff/walk-in-reservation', bookingDetails);
-      if (response.status === 200) {
-        setSuccessMessage('Walk-in reservation added successfully');
-        setBookingDetails({
-          guestName: '',
-          room: { room_id: '' },
-          startDate: '',
-          endDate: ''
-        });
-      } else {
-        setError('Failed to add walk-in reservation');
-      }
-    } catch (error) {
+    })
+    .catch(error => {
       console.error('Error:', error);
-      setError('The room is already occupied by another guest');
-    }
+      alert('Error making reservation.');
+    });
   };
+
+
+  const handleAddMember = () => {
+    if (!firstName || !lastName || !age || !gender || !mobileNo || !email || !securityNo) {
+      alert('Please fill out all member details before adding.');
+      return;
+    }
+    const newMember = { firstName, lastName, age, gender, mobileNo, email, securityNo };
+    setMembers(prevMembers => [...prevMembers, newMember]);
+    // Reset form fields after adding a member
+    setFirstName('');
+    setLastName('');
+    setAge('');
+    setGender('');
+    setMobileNo('');
+    setEmail('');
+    setSecurityNo('');
+    setShowModal(false);
+  };
+
+  React.useEffect(() => { // Prefilling dates based on passed state
+    setStartDate(sdate);
+    setEndDate(enDate);
+  }, [sdate, enDate]);
 
   const styles = {
     container: {
@@ -84,51 +100,56 @@ export const WalkInReservationPage = () => {
       borderRadius: '5px',
       cursor: 'pointer',
     },
-    errorMessage: {
-      color: 'red',
-      textAlign: 'center',
+    modal: {
+      position: 'fixed',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      backgroundColor: 'white',
+      padding: '20px',
+      boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+      zIndex: 1000,
     },
-    successMessage: {
-      color: 'green',
-      textAlign: 'center',
-    }
+    overlay: {
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      width: '100vw',
+      height: '100vh',
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      zIndex: 999,
+    },
   };
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.title}>Walk-in Reservation</h2>
-      {error && <div style={styles.errorMessage}>{error}</div>}
-      {successMessage && <div style={styles.successMessage}>{successMessage}</div>}
-      <form onSubmit={handleSubmit}>
-        <input style={styles.input}
-               type="text"
-               name="guestName"
-               placeholder="Guest Name"
-               value={bookingDetails.guestName}
-               onChange={handleChange}
-        />
-        <input style={styles.input}
-               type="text"
-               name="room.room_id"
-               placeholder="Room ID"
-               value={bookingDetails.room.room_id}
-               onChange={handleChange}
-               readOnly={false}
-        />
-        <input style={styles.input}
-               type="date"
-               name="startDate"
-               value={bookingDetails.startDate}
-               onChange={handleChange}
-        />
-        <input style={styles.input}
-               type="date"
-               name="endDate"
-               value={bookingDetails.endDate}
-               onChange={handleChange}
-        />
-        <button style={styles.button} type="submit">Add Reservation</button>
-      </form>
+      <h1 style={styles.title}>Online Room Booking</h1>
+      <h5>Room ID</h5>
+      <input style={styles.input} type="text" name="room_id" value={room_id} readOnly />
+      <h5>Guest Name</h5>
+      <input style={styles.input} type="text" name="guestName" value={sessionStorage.getItem("userid")} onChange={(e) => setGuestName(e.target.value)} />
+      <h5>Start Date</h5>
+      <input style={styles.input} type="date" name="startDate" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+      <h5>End Date</h5>
+      <input style={styles.input} type="date" name="endDate" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+      <button style={styles.button} onClick={() => setShowModal(true)}>Add Member</button>
+      <button style={styles.button} onClick={handleBook}>Book</button>
+      {showModal && (
+        <>
+          <div style={styles.overlay}></div>
+          <div style={styles.modal}>
+            <h2>Add Member</h2>
+            <input style={styles.input} placeholder="First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+            <input style={styles.input} placeholder="Last Name" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+            <input style={styles.input} placeholder="Age" value={age} onChange={(e) => setAge(e.target.value)} />
+            <input style={styles.input} placeholder="Gender" value={gender} onChange={(e) => setGender(e.target.value)} />
+            <input style={styles.input} placeholder="mobile No" value={mobileNo} onChange={(e) => setMobileNo(e.target.value)} />
+            <input style={styles.input} placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+            <input style={styles.input} placeholder="Security No" value={securityNo} onChange={(e) => setSecurityNo(e.target.value)} />
+            <button style={styles.button} onClick={handleAddMember}>Add</button>
+          </div>
+        </>
+      )}
     </div>
   );
 };

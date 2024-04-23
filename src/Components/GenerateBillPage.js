@@ -1,50 +1,67 @@
 import React, { useState } from 'react';
+import axios from 'axios'; // Import Axios for HTTP requests
+import { useLocation, useNavigate } from 'react-router-dom';
+import { saveAs } from 'file-saver';
+import jsPDF from 'jspdf';
+import html2pdf from 'html2pdf.js';
+import './GenerateBillPage.css'; // Import the CSS file for styling
 
 function GenerateBillPage() {
-  const [bookingId, setBookingId] = useState('');
-  const [error, setError] = useState('');
-  const [billDetails, setBillDetails] = useState('');
+  const location = useLocation();
+  const navigate = useNavigate();
+  const bookingData = location.state.booking || null;
+  const [rating, setRating] = useState(0);
+  const [comments, setComments] = useState('N/A');
 
-  const handleSubmit = async e => {
-    e.preventDefault();
-    try {
-      const response = await fetch(`http://localhost:8181/api/hotel-staff/generate-bill/${bookingId}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ booking_id: bookingId })
-      });
-      if (response.ok) {
-        const data = await response.text();
-        setBillDetails(data);
-        setError(''); // Clear error if successful
-      } else {
-        const data = await response.json();
-        setError(data.message || 'Failed to generate bill');
-        setBillDetails(''); // Clear bill details in case of error
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      setError('No booking ID exists to generate bill');
-      setBillDetails(''); // Clear bill details in case of error
-    }
-  };
+  const download = async () => {
+    const element = document.querySelector(".container");
+    html2pdf().from(element).set({
+      margin: 10,
+      filename: 'bookingDetails.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, logging: true, scrollY: 0, scrollX: 0 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    }).save();
+  }
+
+  if (!bookingData) {
+    return <div>No booking data available.</div>;
+  }
+
+  // Calculate the number of days difference between startDate and endDate
+  const startDate = new Date(bookingData.startDate);
+  const endDate = new Date(bookingData.endDate);
+  const timeDifference = endDate.getTime() - startDate.getTime();
+  const daysDifference = Math.ceil(timeDifference / (1000 * 3600 * 24));
+
+  // Calculate the bill amount (days * price)
+  const billAmount = daysDifference * bookingData.room.price;
 
   return (
     <div>
+      <button className="downloadButton" onClick={download}>Download</button>
       <h2>Generate Bill</h2>
-      {error && <div className="error">{error}</div>}
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Booking ID"
-          value={bookingId}
-          onChange={e => setBookingId(e.target.value)}
-        />
-        <button type="submit">Generate Bill</button>
-      </form>
-      {billDetails && <div className="success">{billDetails}</div>}
+      <div className='container'>
+      
+      <div className="box">
+        <div className="headingColumn">
+          <p>Room Number:</p>
+          <p>Guest Name:</p>
+          <p>Start Date:</p>
+          <p>End Date:</p>
+          <p>Number of Days:</p>
+          <p>Bill Amount:</p>
+        </div>
+        <div className="valueColumn">
+          <p>{bookingData.room.roomNo}</p>
+          <p>{bookingData.user.role_id === 1 ? bookingData.members[0].firstName : bookingData.user.firstName}</p>
+          <p>{bookingData.startDate}</p>
+          <p>{bookingData.endDate}</p>
+          <p>{daysDifference}</p>
+          <p>{billAmount}</p>
+        </div>
+      </div>
+      </div>
     </div>
   );
 }

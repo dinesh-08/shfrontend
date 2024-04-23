@@ -1,47 +1,77 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios'; // Import Axios for HTTP requests
+import { useLocation, useNavigate } from 'react-router-dom';
+import jsPDF from 'jspdf';
+import html2pdf from 'html2pdf.js';
+export function GenerateInvoicePage() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const bookingData = location.state.booking || null;
 
-import React, { useState, useEffect } from "react";export function GenerateInvoicePage() {
-  
-  const [bookingId, setBookingId] = React.useState('');
-  const [error, setError] = React.useState('');
-  const [invoiceDetails, setInvoiceDetails] = React.useState('');
+  const startDate = new Date(bookingData.startDate);
+  const endDate = new Date(bookingData.endDate);
+  const timeDifference = endDate.getTime() - startDate.getTime();
+  const daysDifference = Math.ceil(timeDifference / (1000 * 3600 * 24));
+  const amount = daysDifference * bookingData.room.price;
 
-  const handleSubmit = async e => {
-    e.preventDefault();
-    try {
-      const response = await fetch('http://localhost:8181/api/hotel-staff/generate-invoice', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ booking_id: bookingId })
+  const [invoiceId, setInvoiceId] = useState(null);
+  const [customerName, setCustomerName] = useState('');
+
+
+  useEffect(() => {
+    axios.post('http://localhost:8181/api/hotel-staff/save/invoice', { invoice_id: 0, booking: bookingData, amount: amount })
+      .then(response => {
+        console.log('Invoice generated', response.data);
+        setInvoiceId(response.data.invoice_id + 100);
+        setCustomerName(bookingData?.user.role_id === 1 ? bookingData.members[0].firstName : bookingData.user.firstName);
+      })
+      .catch(error => {
+        console.error('Error generating invoice', error);
       });
-      if (response.ok) {
-        const data = await response.text();
-        setInvoiceDetails(data);
-      } else {
-        const data = await response.json();
-        setError(data.message || 'The invoice has already been generated');
-        setInvoiceDetails('');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      setError('No booking ID exists to generate an invoice');
-      setInvoiceDetails('');
-    }
-  };
+  }, []);
 
-  return React.createElement('div', null,
-    React.createElement('h2', null, 'Generate Invoice'),
-    error && React.createElement('div', { className: 'error' }, error),
-    React.createElement('form', { onSubmit: handleSubmit },
-      React.createElement('input', {
-        type: 'text',
-        placeholder: 'Booking ID',
-        value: bookingId,
-        onChange: e => setBookingId(e.target.value)
-      }),
-      React.createElement('button', { type: 'submit' }, 'Generate Invoice')
-    ),
-    invoiceDetails && React.createElement('div', { className: 'success' }, invoiceDetails)
+  const download = async () => {
+    const element = document.querySelector(".container");
+    if (element) { // Ensure element exists to avoid errors in PDF generation
+      html2pdf().from(element).set({
+        margin: 10,
+        filename: 'invoice.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, logging: true, scrollY: 0, scrollX: 0 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      }).save();
+    } else {
+      console.error("Download PDF failed: Element not found");
+    }
+  }
+
+
+  return (
+    
+    <div >
+      <button className="downloadButton" onClick={download}>Download</button>
+    <div className="container">
+      <h2>Generate Invoice</h2>
+      <table>
+        <tbody>
+          <tr>
+            <th>Invoice ID</th>
+            <td>{invoiceId}</td>
+          </tr>
+          <tr>
+            <th>Amount</th>
+            <td>{amount}</td>
+          </tr>
+          <tr>
+            <th>Customer Name</th>
+            <td>{customerName}</td>
+          </tr>
+        </tbody>
+      </table>
+      
+    </div>
+    </div>
   );
 }
+
+export default GenerateInvoicePage;

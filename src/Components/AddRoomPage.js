@@ -7,6 +7,7 @@ import { useNavigate,NavLink } from 'react-router-dom';
 export function AddRoomPage() {
   const [roomDetails, setRoomDetails] = useState({
     type: "",
+    roomNo: "", // Added roomNo field
     capacity: '',
     room_id:10,
     price: '' // Added price key to roomDetails state
@@ -39,6 +40,7 @@ export function AddRoomPage() {
         setSuccessMessage(response.data);
         setRoomDetails({
           type: "",
+          roomNo: "", // Reset roomNo to '' after room is successfully added
           capacity: '',
           room_id:10,
           price: '' // Reset price to '' after room is successfully added
@@ -51,7 +53,7 @@ export function AddRoomPage() {
       setError("An error occurred. Please try again later.");
     }
   };
- 
+
   return (
     <div className="add-room-page" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
       <nav className="sidebar">
@@ -102,6 +104,17 @@ export function AddRoomPage() {
               </select>
             </div>
             <div className="form-group" style={{ margin: "10px" }}>
+              <label htmlFor="roomNo" className="form-label">Room Number </label>
+              <input
+                id="roomNo"
+                name="roomNo"
+                value={roomDetails.roomNo}
+                onChange={handleChange}
+                className="form-select"
+                required
+              />
+            </div>
+            <div className="form-group" style={{ margin: "10px" }}>
               <label htmlFor="capacity" className="form-label">Capacity </label>
               <select
                 id="capacity"
@@ -114,6 +127,8 @@ export function AddRoomPage() {
                 <option value="">Select Capacity</option>
                 <option value="3">3</option>
                 <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
               </select>
             </div>
             <div className="form-group" style={{ margin: "10px" }}>
@@ -141,7 +156,7 @@ export function AddRoomPage() {
     </div>
   );
 
- 
+
 }
 
 export default AddRoomPage;

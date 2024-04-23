@@ -1,0 +1,19 @@
+.container {
+    padding: 20px;
+  }
+  
+  .box {
+    display: flex;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+  }
+  
+  .headingColumn {
+    margin-right: 20px;
+  }
+  
+  .downloadButton {
+    margin-top: 20px;
+  }
+  

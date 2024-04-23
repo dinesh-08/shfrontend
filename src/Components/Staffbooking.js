@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const GuestBooking = () => {
+const Staffbooking = () => {
   const [type, setType] = useState('');
   const [capacity, setCapacity] = useState('4');  // Default capacity is 4
   const [price, setPrice] = useState('100'); // Default price is 100
@@ -60,7 +60,8 @@ const GuestBooking = () => {
   };
 
   const handleBooking = (room) => {
-    navigate('/OnlineBooking', { state: { room: room } }); // Navigate to walkinReservation page with the room data stored in state
+    navigate('/WalkInReservationPage', { state: { room: room,startDate: date, // Adding date to filter parameters
+    endDate: endDate } }); // Navigate to walkinReservation page with the room data stored in state
   };
 
   return (
@@ -110,4 +111,4 @@ const GuestBooking = () => {
   );
 };
 
-export default GuestBooking;
+export default Staffbooking;

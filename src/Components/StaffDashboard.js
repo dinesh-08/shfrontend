@@ -20,7 +20,7 @@ const StaffDashboard = () => {
           <NavLink className="sidebar-link large-link-box" to="/viewRoomsPage">View Rooms</NavLink>
         </li>
         <li className="sidebar-item large-link-box">
-          <NavLink className="sidebar-link large-link-box" to="/walkInReservationPage">Walk In Reservation</NavLink>
+          <NavLink className="sidebar-link large-link-box" to="/Staffbooking">Walk In Reservation</NavLink>
         </li>
         <li className="sidebar-item large-link-box">
           <NavLink className="sidebar-link large-link-box" to="/generateBillPage">Generate Bill</NavLink>

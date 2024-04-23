@@ -1,0 +1,27 @@
+
+
+
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .osp {
+    text-align: center;
+    font-size: 24px;
+    margin-top: 30px;
+  }
+  
+  
+  
+  .booking-details {
+    width: 100%;
+    border-collapse: collapse;
+    border: 2px solid black; /* Add border to the table */
+  }
+  
+  .booking-details td {
+    border: 1px solid #050404; /* Add border around each cell */
+    padding: 10px; /* Add padding to each cell */
+  }
+  
