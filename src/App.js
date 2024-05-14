@@ -23,6 +23,7 @@ import Feedback from 'react-bootstrap/esm/Feedback';
 import Feedbackform from './Components/Feedbackform';
 import Billsandinvoice from './Components/Billsandinvoice';
 import Report from './Components/Report';
+import ViewGuestBookings from './Components/ViewGuestBookings'
 
 
 function App() {
@@ -52,6 +53,7 @@ function App() {
       <Route path='/feedbackform' element={<Feedbackform/>}/>
       <Route path='/Billsandinvoice' element={<Billsandinvoice/>}/>
       <Route path='/Report' element={<Report/>}/>
+      <Route path='/ViewGuestBookings' element={<ViewGuestBookings/>}/>
       
     </Routes>
   );

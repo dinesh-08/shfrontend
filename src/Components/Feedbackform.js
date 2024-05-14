@@ -5,8 +5,10 @@ import { useLocation,navigate, useNavigate } from 'react-router-dom';
 function FeedbackForm() {
   const location = useLocation();
   const navigate=useNavigate();
-  const bookingData = location.state.booking || null;
-  const [rating, setRating] = useState(0);
+  const feedbackData = location.state?.feedback || null;
+  console.log({feedbackData})
+  const bookingData = feedbackData?.booking || location.state?.booking || null;
+  const [rating, setRating] = useState(feedbackData?.rating || 0);
   const [comments, setComments] = useState('N/A');
  const guest_name=bookingData?.user.role_id === 1 ? bookingData.members[0].firstName : bookingData.user.firstName;
   const handleSubmit = async (e) => {
@@ -30,6 +32,9 @@ function FeedbackForm() {
   };
 
   const handleStarClick = (value) => {
+    if(feedbackData) {
+      return;
+    }
     setRating(value);
   };
 
@@ -39,7 +44,10 @@ function FeedbackForm() {
 
   return (
     <div>
+      {
+feedbackData ? <h2> view feedback</h2> :
         <h2>Feedback Form</h2>
+      }
     <div className="container">
       <form onSubmit={handleSubmit}>
         <label htmlFor="firstName">First Name:</label>
@@ -65,10 +73,10 @@ function FeedbackForm() {
         <textarea
           id="comments"
           name="comments"
-          value={comments}
+          value={feedbackData?.feedback_text || comments}
           onChange={handleCommentsChange}
         ></textarea>
-        <button type="submit">Submit</button>
+        {!feedbackData && <button type="submit">Submit</button>}
       </form>
     </div>
     </div>

@@ -6,7 +6,6 @@ import Modalbox from './Modalbox';
 
 export function Viewbookings() {
   const [bookings, setBookings] = useState([]);
-  const [selectedOption, setSelectedOption] = useState("selectvalue");
   const [showModal, setShowModal] = useState(false);
   const [feedbackBooking, setFeedbackBooking] = useState({});
   const [selectedRoomType, setSelectedRoomType] = useState("");
@@ -23,12 +22,8 @@ export function Viewbookings() {
 
   useEffect(() => {
     fetchFeedbackList();
-    if (selectedOption === "my") {
-      fetchMyBookings();
-    } else if (selectedOption === "all") {
-      fetchAllBookings();
-    }
-  }, [selectedOption]);
+    fetchAllBookings();
+  }, []);
 
   const handleFeedback = (booking) => {
     setFeedbackBooking(booking);
@@ -50,13 +45,14 @@ export function Viewbookings() {
     try {
       const apiUrl = `http://localhost:8181/api/hotel-staff/bookingDetails/delete/${booking.booking_id}`;
       await axios.put(apiUrl, { isdeleted: true });
-      fetchMyBookings();
+      fetchAllBookings();
     } catch (error) {
       console.error('Error canceling booking:', error);
     }
   };
 
   const fetchMyBookings = async () => {
+    // This function is retained but not used
     try {
       const userId = sessionStorage.getItem("userid");
       if (!userId) return;
@@ -87,23 +83,19 @@ export function Viewbookings() {
 
   const fetchAllBookings = async () => {
     try {
-      const apiUrl = `http://localhost:8181/api/hotel-staff/bookingDetails/all`;
-      const response = await axios.get(apiUrl);
-      setBookings(response.data);
-      setBookingIds(response.data.map(booking => booking.booking_id));
-    } catch (error) {
-      console.error('Error fetching all bookings:', error);
-    }
+        const userId = sessionStorage.getItem("userid");
+        if (!userId) return;
+  
+        const apiUrl = `http://localhost:8181/api/hotel-staff/bookingDetails/user/${userId}`;
+        const response = await axios.get(apiUrl);
+        setBookings(response.data);
+        setBookingIds(response.data.map(booking => booking.booking_id));
+      } catch (error) {
+        console.error('Error fetching bookings:', error);
+      }
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    if (selectedOption === "my") {
-      fetchMyBookings();
-    } else if (selectedOption === "all") {
-      fetchAllBookings();
-    }
-  };
+  
 
   const handleUpdate = (booking) => {
     setBooking_id(booking.booking_id);
@@ -120,25 +112,16 @@ export function Viewbookings() {
         console.log("Submitted successfully:", response.data);
         handleCloseModal();
         alert('succesfully updated')
-        fetchMyBookings();
+        fetchAllBookings();
       })
       .catch(error => {
         console.error('Error submitting form:', error);
       });
-};
+  };
 
   return (
     <div>
      {showModal && <Modalbox onClose={handleCloseModal} onSubmit={formData => handleModalSubmit(booking_id, formData)} />}
-
-      <form onSubmit={handleSubmit}>
-        <select value={selectedOption} onChange={(e) => setSelectedOption(e.target.value)}>
-          <option value="selectvalue">Select</option>
-          <option value="my">My</option>
-          <option value="all">All</option>
-        </select>
-        <button type="submit">Submit</button>
-      </form>
       <h2>Booking Details</h2>
       <table>
         <thead>
@@ -169,7 +152,7 @@ export function Viewbookings() {
                   feedbackBookingIds.includes(booking.booking_id)?
                     <button onClick={() => handleViewFeedBack(booking)}>ViewFeedBack</button>:
                     <button onClick={() => handleFeedback(booking)}>Feedback</button>
-                  
+
                 )}
               </td>
             </tr>

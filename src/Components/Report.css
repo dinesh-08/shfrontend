@@ -1,0 +1,25 @@
+.report-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .report-content {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .report-item {
+    display: flex;
+    margin-bottom: 10px;
+  }
+  
+  .report-item-key {
+    font-weight: bold;
+    margin-right: 5px;
+  }
+  
+  .report-item-value {
+    margin-left: 5px;
+  }
+  
