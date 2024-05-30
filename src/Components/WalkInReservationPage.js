@@ -33,6 +33,7 @@ export const WalkInReservationPage = () => {
       userid: sessionStorage.getItem("userid"),
       startDate,
       endDate,
+      bookedDate: new Date().toISOString().split('T')[0],
       members,
       isdeleted: false,
     })
@@ -139,6 +140,7 @@ export const WalkInReservationPage = () => {
           <div style={styles.overlay}></div>
           <div style={styles.modal}>
             <h2>Add Member</h2>
+            <button style={styles.button} onClick={() => setShowModal(false)}>Close</button>
             <input style={styles.input} placeholder="First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
             <input style={styles.input} placeholder="Last Name" value={lastName} onChange={(e) => setLastName(e.target.value)} />
             <input style={styles.input} placeholder="Age" value={age} onChange={(e) => setAge(e.target.value)} />

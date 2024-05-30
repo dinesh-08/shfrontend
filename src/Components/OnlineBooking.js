@@ -19,9 +19,11 @@ export const OnlineBooking = () => {
   const [phoneNo, setPhoneNo] = useState('');
   const [email, setEmail] = useState('');
   const [securityNo, setSecurityNo] = useState('');
+  const sdate = location.state.startDate;
+  const enDate = location.state.endDate;
 
   const handleBook = () => {
-    if ( !startDate || !endDate || members.length === 0) {
+    if (!startDate || !endDate || members.length === 0) {
       alert('Please fill out all fields before booking.');
       return;
     }
@@ -30,6 +32,7 @@ export const OnlineBooking = () => {
       userid: sessionStorage.getItem("userid"),
       startDate,
       endDate,
+      bookedDate: new Date().toISOString().split('T')[0],
       members,
       isdeleted: false,
     })
@@ -37,14 +40,12 @@ export const OnlineBooking = () => {
       const bookingId = response.data;
       alert('Booking successful!');
       navigate('/viewmybookinghistory', { state: { bookingId } });
-     
     })
     .catch(error => {
       console.error('Error:', error);
       alert('Error making reservation.');
     });
   };
-
 
   const handleAddMember = () => {
     if (!firstName || !lastName || !age || !gender || !phoneNo || !email || !securityNo) {
@@ -53,7 +54,6 @@ export const OnlineBooking = () => {
     }
     const newMember = { firstName, lastName, age, gender, phoneNo, email, securityNo };
     setMembers(prevMembers => [...prevMembers, newMember]);
-    // Reset form fields after adding a member
     setFirstName('');
     setLastName('');
     setAge('');
@@ -63,6 +63,11 @@ export const OnlineBooking = () => {
     setSecurityNo('');
     setShowModal(false);
   };
+
+  React.useEffect(() => {
+    setStartDate(sdate);
+    setEndDate(enDate);
+  }, [sdate, enDate]);
 
   const styles = {
     container: {
@@ -139,6 +144,7 @@ export const OnlineBooking = () => {
             <input style={styles.input} placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
             <input style={styles.input} placeholder="Security No" value={securityNo} onChange={(e) => setSecurityNo(e.target.value)} />
             <button style={styles.button} onClick={handleAddMember}>Add</button>
+            <button style={styles.button} onClick={() => setShowModal(false)}>Close</button>
           </div>
         </>
       )}

@@ -20,15 +20,24 @@ export function Report() {
       });
   }, [userId]);
 
-  const handleViewRooms = (value) => {
-    if (value && value[0].booking_id) {
-      setSelectedRooms([value[0].room]);
+
+  const handleViewRooms = (key, value) => {
+    if (value && key!='emptyRooms') {
+      setSelectedRooms(value.map(item => item.room));
     } else {
-      setSelectedRooms(value)
+      setSelectedRooms(value);
     }
     setIsModalOpen(true);
   };
 
+  // const handleViewRooms = (value) => {
+  //   if (value && value[0].booking_id) {
+  //     setSelectedRooms([value[0].room]);
+  //   } else {
+  //     setSelectedRooms(value)
+  //   }
+  //   setIsModalOpen(true);
+  // };
   const closeModal = () => {
     setIsModalOpen(false);
   };
@@ -44,7 +53,7 @@ export function Report() {
                 <p style={{ display: "flex", justifyContent: "space-between", margin: "0" }}>
                   <span style={{ fontWeight: "bold" }}>{key}:</span>
                   <span>{value.length}</span> {/* Assuming the value is an array */}
-                  <button onClick={() => handleViewRooms(value)}>View</button>
+                  <button onClick={() => handleViewRooms(key, value)}>View</button>
                 </p>
               </div>
             ))}

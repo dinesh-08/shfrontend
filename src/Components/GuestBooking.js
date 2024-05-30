@@ -60,7 +60,8 @@ const GuestBooking = () => {
   };
 
   const handleBooking = (room) => {
-    navigate('/OnlineBooking', { state: { room: room } }); // Navigate to walkinReservation page with the room data stored in state
+    navigate('/OnlineBooking', { state: { room: room,startDate: date, // Adding date to filter parameters
+    endDate: endDate  } }); // Navigate to walkinReservation page with the room data stored in state
   };
 
   return (
